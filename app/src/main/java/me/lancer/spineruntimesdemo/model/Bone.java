@@ -1,11 +1,15 @@
 package me.lancer.spineruntimesdemo.model;
 
+import android.util.Log;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.esotericsoftware.spine.AnimationState;
 import com.esotericsoftware.spine.AnimationStateData;
 import com.esotericsoftware.spine.Skeleton;
@@ -17,6 +21,7 @@ import com.esotericsoftware.spine.SkeletonRendererDebug;
 public class Bone extends ApplicationAdapter {
 
     OrthographicCamera camera;
+    Viewport viewport;
     SpriteBatch batch;
     SkeletonRenderer renderer;
     SkeletonRendererDebug debugRenderer;
@@ -27,6 +32,7 @@ public class Bone extends ApplicationAdapter {
 
     public void create() {
         camera = new OrthographicCamera();
+        viewport = new FitViewport(256, 256, camera);
         batch = new SpriteBatch();
         renderer = new SkeletonRenderer();
         renderer.setPremultipliedAlpha(true); // PMA results in correct blending without outlines.
@@ -39,7 +45,12 @@ public class Bone extends ApplicationAdapter {
         SkeletonData skeletonData = json.readSkeletonData(Gdx.files.internal("bone/bone.json"));
 
         skeleton = new Skeleton(skeletonData); // Skeleton holds skeleton state (bone positions, slot attachments, etc).
-        skeleton.setPosition(-350, 750);
+        skeleton.setPosition(-560, 460);
+
+        int screenW = Gdx.graphics.getWidth();
+        int screenH = Gdx.graphics.getHeight();
+
+        Log.d("log", "create: width " + screenW + "height" + screenH);
 
         AnimationStateData stateData = new AnimationStateData(skeletonData); // Defines mixing (crossfading) between animations.
         stateData.setMix("walk", "walk", 0.2f);
@@ -58,7 +69,10 @@ public class Bone extends ApplicationAdapter {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+
+//        Gdx.gl.glViewport((int) viewport.getScreenX(), (int) viewport.getScreenY(),
+//                (int) viewport.getScreenWidth(), (int) viewport.getScreenHeight());
 
         state.apply(skeleton); // Poses skeleton using current animations. This sets the bones' local SRT.
         skeleton.updateWorldTransform(); // Uses the bones' local SRT to compute their world SRT.
@@ -72,11 +86,13 @@ public class Bone extends ApplicationAdapter {
         renderer.draw(batch, skeleton); // Draw the skeleton images.
         batch.end();
 
-//        debugRenderer.draw(skeleton); // Draw debug lines.
+        debugRenderer.draw(skeleton); // Draw debug lines.
+
+        noZoom();
     }
 
     public void resize(int width, int height) {
-        camera.setToOrtho(false); // Update camera with new size.
+        viewport.update(width, height);
     }
 
     public void dispose() {
@@ -92,6 +108,8 @@ public class Bone extends ApplicationAdapter {
     }
 
     public void zoomSmall() {
-        camera.zoom = 1f;
+        camera.zoom = 2f;
     }
+
+    public void noZoom() { camera.zoom = 1f; }
 }

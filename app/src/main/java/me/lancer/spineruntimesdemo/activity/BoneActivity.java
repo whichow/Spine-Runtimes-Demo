@@ -71,8 +71,8 @@ public class BoneActivity extends AppActivity {
             layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
         layoutParams.flags = 40;
-        layoutParams.width = dp2Px(144);
-        layoutParams.height = dp2Px(144);
+        layoutParams.width = dp2Px(256);
+        layoutParams.height = dp2Px(256);
         layoutParams.format = -3;
         windowManager.addView(boneView, layoutParams);
     }
