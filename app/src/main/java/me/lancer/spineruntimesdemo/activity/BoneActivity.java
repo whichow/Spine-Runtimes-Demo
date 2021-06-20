@@ -2,6 +2,7 @@ package me.lancer.spineruntimesdemo.activity;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -64,7 +65,11 @@ public class BoneActivity extends AppActivity {
                 return true;
             }
         });
-        layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        }
         layoutParams.flags = 40;
         layoutParams.width = dp2Px(144);
         layoutParams.height = dp2Px(144);
